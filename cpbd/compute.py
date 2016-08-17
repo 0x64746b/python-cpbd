@@ -34,13 +34,13 @@ def _simple_thinning(strength):
     zero_row = np.zeros((1, num_cols))
 
     x = (
-        (strength > np.concatenate((zero_column, strength[:, :-1]), axis=1)) &
-        (strength > np.concatenate((strength[:, 1:], zero_column), axis=1))
+        (strength > np.c_[zero_column, strength[:, :-1]]) &
+        (strength > np.c_[strength[:, 1:], zero_column])
     )
 
     y = (
-        (strength > np.concatenate((zero_row, strength[:-1, :]))) &
-        (strength > np.concatenate((strength[1:, :], zero_row)))
+        (strength > np.r_[zero_row, strength[:-1, :]]) &
+        (strength > np.r_[strength[1:, :], zero_row])
     )
 
     return x | y
