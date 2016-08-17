@@ -1,7 +1,13 @@
 # coding: utf-8
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals
+)
 
+from math import atan2, pi
 from sys import argv
 
 import numpy as np
@@ -19,6 +25,36 @@ def compute(input_image):
 
     canny_edges = canny(input_image)
     sobel_edges = _simple_thinning(sobel_v(input_image))
+
+
+def marziliano_method(edges, image):
+    # type: (numpy.ndarray, numpy.ndarray) -> numpy.ndarray
+    """
+    Calculate the widths of the given edges.
+
+    :return: A matrix with the same dimensions as the given image with 0's at
+        non-edge locations and edge-widths at the edge locations.
+    """
+    edge_widths = np.zeros(image.shape)
+
+    # TODO: Check weird order. Rename?
+    gy, gx = np.gradient(image)
+
+    img_height, img_width = image.shape
+
+    edge_angles = np.zeros(image.shape)
+
+    for m in range(img_height):
+        for n in range(img_width):
+            if gx[m, n] != 0:
+                edge_angles[m, n] = atan2(gy[m, n], gx[m, n]) * (180 / pi)
+            elif gx[m, n] == 0 and gy[m, n] == 0:
+                edge_angles[m,n] = 0
+            elif gx[m, n] == 0 and gy[m, n] == pi/2:
+                edge_angles[m, n] = 90
+
+    if np.any(edge_angles):
+        quantized_angles = 45 * np.round(edge_angles / 45)
 
 
 def _simple_thinning(strength):
