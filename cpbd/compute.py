@@ -23,6 +23,16 @@ def compute(input_image):
     # convert the image to double for further processing
     input_image = input_image.astype(np.float64)
 
+    # get the size of image
+    img_height, img_width = input_image.shape
+
+    # block size
+    block_height, block_width = (64, 64)
+
+    # maximum block indices
+    num_blocks_vertically = int(img_height / block_height)
+    num_blocks_horizontally = int(img_width / block_width)
+
     # just noticeable widths based on the perceptual experiments
     width_jnb = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 
@@ -34,6 +44,15 @@ def compute(input_image):
 
     # edge width calculation
     width = marziliano_method(sobel_edges, input_image)
+
+    # sharpness metric calculation
+    #  loop over the blocks
+    for i in range(num_blocks_vertically):
+        for j in range(num_blocks_horizontally):
+
+            # get the row and col indices for the block pixel positions
+            rows = (block_height * i, block_height * (i + 1))
+            cols = (block_width * j, block_width * (j + 1))
 
 
 def marziliano_method(edges, image):
