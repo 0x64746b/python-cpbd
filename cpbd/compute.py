@@ -23,11 +23,16 @@ def compute(input_image):
     # convert the image to double for further processing
     input_image = input_image.astype(np.float64)
 
+    # just noticeable widths based on the perceptual experiments
     width_jnb = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 
+    # edge detection using canny and sobel canny edge detection is done to
+    # classify the blocks as edge or non-edge blocks and sobel edge
+    # detection is done for the purpose of edge width measurement.
     canny_edges = canny(input_image)
     sobel_edges = _simple_thinning(sobel_v(input_image))
 
+    # edge width calculation
     width = marziliano_method(sobel_edges, input_image)
 
 
