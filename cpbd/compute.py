@@ -26,6 +26,12 @@ def compute(input_image):
     # get the size of image
     img_height, img_width = input_image.shape
 
+    # threshold to characterize blocks as edge/non-edge blocks
+    threshold = 0.002
+
+    # fitting parameter
+    beta = 3.6
+
     # block size
     block_height, block_width = (64, 64)
 
@@ -53,6 +59,17 @@ def compute(input_image):
             # get the row and col indices for the block pixel positions
             rows = slice(block_height * i, block_height * (i + 1))
             cols = slice(block_width * j, block_width * (j + 1))
+
+            if is_edge_block(canny_edges[rows, cols], threshold):
+                block_widths = width[rows, cols]
+                # rotate block to simulate column-major boolean indexing
+                block_widths = np.rot90(np.flipud(block_widths), 3)
+                block_widths = block_widths[block_widths != 0]
+
+                block_contrast = get_block_contrast(input_image[rows, cols])
+                block_jnb = width_jnb[block_contrast]
+
+                prob_blur_detection = 1 - np.exp(-abs(block_widths/block_jnb) ** beta)
 
 
 def marziliano_method(edges, image):
