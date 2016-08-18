@@ -157,6 +157,11 @@ def is_edge_block(block, threshold):
     return np.count_nonzero(block) > (block.size * threshold)
 
 
+def get_block_contrast(block):
+    # type: (numpy.ndarray) -> numbers.Number
+    return np.max(block) - np.min(block)
+
+
 def _simple_thinning(strength):
     # type: (numpy.ndarray) -> numpy.ndarray
     """
