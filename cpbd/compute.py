@@ -19,12 +19,16 @@ from skimage.filters import sobel_v
 def compute(input_image):
     # type: (numpy.ndarray) -> float
     """Compute the sharpness metric for the given data."""
-    print(input_image[0,0])
+
+    # convert the image to double for further processing
+    input_image = input_image.astype(np.float64)
 
     width_jnb = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 
     canny_edges = canny(input_image)
     sobel_edges = _simple_thinning(sobel_v(input_image))
+
+    width = marziliano_method(sobel_edges, input_image)
 
 
 def marziliano_method(edges, image):
