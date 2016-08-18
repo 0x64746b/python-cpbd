@@ -51,8 +51,8 @@ def compute(input_image):
         for j in range(num_blocks_horizontally):
 
             # get the row and col indices for the block pixel positions
-            rows = (block_height * i, block_height * (i + 1))
-            cols = (block_width * j, block_width * (j + 1))
+            rows = slice(block_height * i, block_height * (i + 1))
+            cols = slice(block_width * j, block_width * (j + 1))
 
 
 def marziliano_method(edges, image):
