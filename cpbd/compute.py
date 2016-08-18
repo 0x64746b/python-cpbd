@@ -151,6 +151,12 @@ def marziliano_method(edges, image):
     return edge_widths
 
 
+def is_edge_block(block, threshold):
+    # type: (numpy.ndarray, float) -> bool
+    """Decide whether the given block is an edge block."""
+    return np.count_nonzero(block) > (block.size * threshold)
+
+
 def _simple_thinning(strength):
     # type: (numpy.ndarray) -> numpy.ndarray
     """
