@@ -103,16 +103,6 @@ def marziliano_method(edges, image):
                     # gradient angle = 0
                     if quantized_angles[row, col] == 0:
                         for margin in range(100 + 1):
-                            inner_border = (col + 1) + margin
-                            outer_border = (col + 2) + margin
-
-                            # outside image or intensity decreasing from left to right
-                            if outer_border >= img_width or (image[row, outer_border] - image[row, inner_border]) <= 0:
-                                break
-
-                        width_right = margin + 1
-
-                        for margin in range(100 + 1):
                             inner_border = (col - 1) - margin
                             outer_border = (col - 2) - margin
 
@@ -121,6 +111,16 @@ def marziliano_method(edges, image):
                                 break
 
                         width_left = margin + 1
+
+                        for margin in range(100 + 1):
+                            inner_border = (col + 1) + margin
+                            outer_border = (col + 2) + margin
+
+                            # outside image or intensity decreasing from left to right
+                            if outer_border >= img_width or (image[row, outer_border] - image[row, inner_border]) <= 0:
+                                break
+
+                        width_right = margin + 1
 
                         edge_widths[row, col] = width_right + width_left
 
