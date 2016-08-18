@@ -56,6 +56,54 @@ def marziliano_method(edges, image):
     if np.any(edge_angles):
         quantized_angles = 45 * np.round(edge_angles / 45)
 
+        for m in range(1, img_height - 1):
+            for n in range(1, img_width - 1):
+                if edges[m, n] == 1:
+
+                    if quantized_angles[m, n] == 180 or quantized_angles[m, n] == -180:
+                        for k in range(100 + 1):
+                            pos_y1 = (n - 1) - k
+                            pos_y2 = (n - 2) - k
+
+                            if pos_y2 < 0 or (image[m, pos_y2] - image[m, pos_y1]) <= 0:
+                                break
+
+                        width_count_side_1 = k + 1
+
+                        for k in range(100 + 1):
+                            neg_y1 = (n + 1) + k
+                            neg_y2 = (n + 2) + k
+
+                            if neg_y2 >= img_height or (image[m, neg_y2] - image[m, neg_y1]) >= 0:
+                                break
+
+                        width_count_side_2 = k + 1
+
+                        edge_widths[m, n] = width_count_side_1 + width_count_side_2
+
+                    if quantized_angles[m, n] == 0:
+                        for k in range(100 + 1):
+                            pos_y1 = (n + 1) + k
+                            pos_y2 = (n + 2) + k
+
+                            if pos_y2 >= img_width or (image[m, pos_y2] - image[m, pos_y1]) <= 0:
+                                break
+
+                        width_count_side_1 = k + 1
+
+                        for k in range(100 + 1):
+                            neg_y1 = (n - 1) - k
+                            neg_y2 = (n - 2) - k
+
+                            if neg_y2 < 0 or (image[m, neg_y2] - image[m, neg_y1] >= 0):
+                                break
+
+                        width_count_side_2 = k + 1
+
+                        edge_widths[m, n] = width_count_side_1 + width_count_side_2
+
+    return edge_widths
+
 
 def _simple_thinning(strength):
     # type: (numpy.ndarray) -> numpy.ndarray
