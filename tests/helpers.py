@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from __future__ import absolute_import, print_function, unicode_literals
+
 import numpy as np
 
 
@@ -11,3 +13,9 @@ def parse_matlab_data(file_path, dtype=np.float64):
             data.append(line.strip('\n').split(','))
 
     return np.array(data, dtype=dtype)
+
+
+def round_to_precision(value, precision):
+    shift = 10 ** precision
+    return round(value * shift) / shift
+
