@@ -15,6 +15,8 @@ from scipy.ndimage import imread
 from skimage.feature import canny
 from skimage.filters import sobel_v
 
+from .octave import simple_thinning
+
 
 # threshold to characterize blocks as edge/non-edge blocks
 THRESHOLD = 0.002
@@ -40,7 +42,7 @@ def compute(image):
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
     canny_edges = canny(image)
-    sobel_edges = _simple_thinning(sobel_v(image))
+    sobel_edges = simple_thinning(sobel_v(image))
 
     # edge width calculation
     marziliano_widths = marziliano_method(sobel_edges, image)
@@ -202,31 +204,6 @@ def is_edge_block(block, threshold):
 def get_block_contrast(block):
     # type: (numpy.ndarray) -> int
     return int(np.max(block) - np.min(block))
-
-
-def _simple_thinning(strength):
-    # type: (numpy.ndarray) -> numpy.ndarray
-    """
-    Perform a very simple thinning.
-
-    Inspired by the [Octave implementation](https://sourceforge.net/p/octave/image/ci/default/tree/inst/edge.m#l512).
-    """
-    num_rows, num_cols = strength.shape
-
-    zero_column = np.zeros((num_rows, 1))
-    zero_row = np.zeros((1, num_cols))
-
-    x = (
-        (strength > np.c_[zero_column, strength[:, :-1]]) &
-        (strength > np.c_[strength[:, 1:], zero_column])
-    )
-
-    y = (
-        (strength > np.r_[zero_row, strength[:-1, :]]) &
-        (strength > np.r_[strength[1:, :], zero_row])
-    )
-
-    return x | y
 
 
 if __name__ == '__main__':
