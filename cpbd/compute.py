@@ -42,6 +42,9 @@ def compute(input_image):
     # just noticeable widths based on the perceptual experiments
     width_jnb = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 
+    total_num_edges = 0
+    hist_pblur = np.zeros(101)
+
     # edge detection using canny and sobel canny edge detection is done to
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
@@ -69,7 +72,22 @@ def compute(input_image):
                 block_contrast = get_block_contrast(input_image[rows, cols])
                 block_jnb = width_jnb[block_contrast]
 
+                # calculate the probability of blur detection at the edges
+                # detected in the block
                 prob_blur_detection = 1 - np.exp(-abs(block_widths/block_jnb) ** beta)
+
+                # update the statistics using the block information
+                for probability in prob_blur_detection:
+                    bucket = int(round(probability * 100))
+                    hist_pblur[bucket] += 1
+                    total_num_edges += 1
+
+    # normalize the pdf
+    if total_num_edges > 0:
+        hist_pblur = hist_pblur / total_num_edges
+
+    # calculate the sharpness metric
+    return np.sum(hist_pblur[:64])
 
 
 def marziliano_method(edges, image):
@@ -206,4 +224,5 @@ def _simple_thinning(strength):
 
 if __name__ == '__main__':
     input_image = imread(argv[1], mode='L')
-    compute(input_image)
+    sharpness = compute(input_image)
+    print('CPBD sharpness for %s: %f' % (argv[1], sharpness))
