@@ -14,8 +14,3 @@ def parse_matlab_data(file_path, dtype=np.float64):
 
     return np.array(data, dtype=dtype)
 
-
-def round_to_precision(value, precision):
-    shift = 10 ** precision
-    return round(value * shift) / shift
-

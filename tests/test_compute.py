@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from cpbd.compute import marziliano_method, _calculate_sharpness_metric
-from .helpers import parse_matlab_data, round_to_precision
+from .helpers import parse_matlab_data
 
 
 @pytest.fixture
@@ -43,4 +43,4 @@ def test_calculate_sharpness_metric(reference_input, reference_canny, reference_
         reference_marziliano
     )
 
-    assert round_to_precision(sharpness, 4) == 0.1349
+    assert round(sharpness, 4) == 0.1349
