@@ -16,78 +16,37 @@ from skimage.feature import canny
 from skimage.filters import sobel_v
 
 
-def compute(input_image):
+# threshold to characterize blocks as edge/non-edge blocks
+THRESHOLD = 0.002
+
+# fitting parameter
+BETA = 3.6
+
+# block size
+BLOCK_HEIGHT, BLOCK_WIDTH = (64, 64)
+
+# just noticeable widths based on the perceptual experiments
+WIDTH_JNB = np.concatenate([5*np.ones(51), 3*np.ones(205)])
+
+
+def compute(image):
     # type: (numpy.ndarray) -> float
     """Compute the sharpness metric for the given data."""
 
     # convert the image to double for further processing
-    input_image = input_image.astype(np.float64)
-
-    # get the size of image
-    img_height, img_width = input_image.shape
-
-    # threshold to characterize blocks as edge/non-edge blocks
-    threshold = 0.002
-
-    # fitting parameter
-    beta = 3.6
-
-    # block size
-    block_height, block_width = (64, 64)
-
-    # maximum block indices
-    num_blocks_vertically = int(img_height / block_height)
-    num_blocks_horizontally = int(img_width / block_width)
-
-    # just noticeable widths based on the perceptual experiments
-    width_jnb = np.concatenate([5*np.ones(51), 3*np.ones(205)])
-
-    total_num_edges = 0
-    hist_pblur = np.zeros(101)
+    image = image.astype(np.float64)
 
     # edge detection using canny and sobel canny edge detection is done to
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
-    canny_edges = canny(input_image)
-    sobel_edges = _simple_thinning(sobel_v(input_image))
+    canny_edges = canny(image)
+    sobel_edges = _simple_thinning(sobel_v(image))
 
     # edge width calculation
-    width = marziliano_method(sobel_edges, input_image)
+    marziliano_widths = marziliano_method(sobel_edges, image)
 
     # sharpness metric calculation
-    #  loop over the blocks
-    for i in range(num_blocks_vertically):
-        for j in range(num_blocks_horizontally):
-
-            # get the row and col indices for the block pixel positions
-            rows = slice(block_height * i, block_height * (i + 1))
-            cols = slice(block_width * j, block_width * (j + 1))
-
-            if is_edge_block(canny_edges[rows, cols], threshold):
-                block_widths = width[rows, cols]
-                # rotate block to simulate column-major boolean indexing
-                block_widths = np.rot90(np.flipud(block_widths), 3)
-                block_widths = block_widths[block_widths != 0]
-
-                block_contrast = get_block_contrast(input_image[rows, cols])
-                block_jnb = width_jnb[block_contrast]
-
-                # calculate the probability of blur detection at the edges
-                # detected in the block
-                prob_blur_detection = 1 - np.exp(-abs(block_widths/block_jnb) ** beta)
-
-                # update the statistics using the block information
-                for probability in prob_blur_detection:
-                    bucket = int(round(probability * 100))
-                    hist_pblur[bucket] += 1
-                    total_num_edges += 1
-
-    # normalize the pdf
-    if total_num_edges > 0:
-        hist_pblur = hist_pblur / total_num_edges
-
-    # calculate the sharpness metric
-    return np.sum(hist_pblur[:64])
+    return _calculate_sharpness_metric(image, canny_edges, marziliano_widths)
 
 
 def marziliano_method(edges, image):
@@ -184,6 +143,54 @@ def marziliano_method(edges, image):
                         edge_widths[row, col] = width_right + width_left
 
     return edge_widths
+
+
+def _calculate_sharpness_metric(image, edges, edge_widths):
+    # type: (numpy.array, numpy.array, numpy.array) -> numpy.float64
+
+    # get the size of image
+    img_height, img_width = image.shape
+
+    total_num_edges = 0
+    hist_pblur = np.zeros(101)
+
+    # maximum block indices
+    num_blocks_vertically = int(img_height / BLOCK_HEIGHT)
+    num_blocks_horizontally = int(img_width / BLOCK_WIDTH)
+
+    #  loop over the blocks
+    for i in range(num_blocks_vertically):
+        for j in range(num_blocks_horizontally):
+
+            # get the row and col indices for the block pixel positions
+            rows = slice(BLOCK_HEIGHT * i, BLOCK_HEIGHT * (i + 1))
+            cols = slice(BLOCK_WIDTH * j, BLOCK_WIDTH * (j + 1))
+
+            if is_edge_block(edges[rows, cols], THRESHOLD):
+                block_widths = edge_widths[rows, cols]
+                # rotate block to simulate column-major boolean indexing
+                block_widths = np.rot90(np.flipud(block_widths), 3)
+                block_widths = block_widths[block_widths != 0]
+
+                block_contrast = get_block_contrast(image[rows, cols])
+                block_jnb = WIDTH_JNB[block_contrast]
+
+                # calculate the probability of blur detection at the edges
+                # detected in the block
+                prob_blur_detection = 1 - np.exp(-abs(block_widths/block_jnb) ** BETA)
+
+                # update the statistics using the block information
+                for probability in prob_blur_detection:
+                    bucket = int(round(probability * 100))
+                    hist_pblur[bucket] += 1
+                    total_num_edges += 1
+
+    # normalize the pdf
+    if total_num_edges > 0:
+        hist_pblur = hist_pblur / total_num_edges
+
+    # calculate the sharpness metric
+    return np.sum(hist_pblur[:64])
 
 
 def is_edge_block(block, threshold):
