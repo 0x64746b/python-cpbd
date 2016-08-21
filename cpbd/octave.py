@@ -11,9 +11,8 @@ def sobel(image):
     """Find the edges in `image` using the Sobel approximation."""
 
     # http://stackoverflow.com/a/7186582/1666398
-    dx = ndimage.sobel(image, 0)
-    dy = ndimage.sobel(image, 1)
-    mag = np.hypot(dx, dy)
+    dx = ndimage.sobel(image, 1)
+    mag = np.square(dx)
     mag *= 255.0 / np.max(mag)
 
     # http://www.kerrywong.com/2009/05/07/canny-edge-detection-auto-thresholding/
