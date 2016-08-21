@@ -15,7 +15,7 @@ from scipy.ndimage import imread
 from skimage.feature import canny
 from skimage.filters import sobel_v
 
-from .octave import simple_thinning
+from cpbd.octave import sobel
 
 
 # threshold to characterize blocks as edge/non-edge blocks
@@ -42,7 +42,7 @@ def compute(image):
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
     canny_edges = canny(image)
-    sobel_edges = simple_thinning(sobel_v(image))
+    sobel_edges = sobel(image, 2)
 
     # edge width calculation
     marziliano_widths = marziliano_method(sobel_edges, image)
