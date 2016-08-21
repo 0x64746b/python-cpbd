@@ -42,7 +42,7 @@ def compute(image):
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
     canny_edges = canny(image)
-    sobel_edges = sobel(image, 2)
+    sobel_edges = sobel(image)
 
     # edge width calculation
     marziliano_widths = marziliano_method(sobel_edges, image)

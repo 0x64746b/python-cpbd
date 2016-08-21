@@ -3,26 +3,24 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import numpy as np
-from scipy.signal import convolve2d
+from scipy import ndimage
 
 
-VSOBEL_WEIGHTS = np.array([
-    [1, 0, -1],
-    [2, 0, -2],
-    [1, 0, -1]
-])
-
-
-def sobel(image, threshold):
+def sobel(image):
     # type: (numpy.ndarray, int) -> numpy.ndarray
     """Find the edges in `image` using the Sobel approximation."""
 
-    # Compute edge strength
-    strength = abs(convolve2d(image, VSOBEL_WEIGHTS, mode='same'))
+    # http://stackoverflow.com/a/7186582/1666398
+    dx = ndimage.sobel(image, 0)
+    dy = ndimage.sobel(image, 1)
+    mag = np.hypot(dx, dy)
+    mag *= 255.0 / np.max(mag)
 
-    ## Perform thresholding and simple thinning
-    strength[strength <= threshold] = 0
-    return _simple_thinning(strength)
+    # http://www.kerrywong.com/2009/05/07/canny-edge-detection-auto-thresholding/
+    threshold = np.mean(mag)
+    mag[mag <= threshold] = 0
+
+    return _simple_thinning(mag)
 
 
 def _simple_thinning(strength):
