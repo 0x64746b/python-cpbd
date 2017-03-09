@@ -15,18 +15,18 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error
 
 
-def plot_sharpness(reference, port, output_file):
-    rmse = np.sqrt(mean_squared_error(reference.sharpness, port.sharpness))
+def plot_sharpness(sharpness, output_file):
+    rmse = np.sqrt(mean_squared_error(
+        sharpness['CPBDM_Release_v1.0'],
+        sharpness['python-cpbd']
+    ))
 
     plt.style.use('ggplot')
 
-    plt.plot(reference.sharpness.values, label='CPBDM_Release_v1.0')
-    plt.plot(port.sharpness.values, label='python-cpbd')
+    sharpness.plot()
 
     plt.title('Performance on LIVE database')
     plt.gca().add_artist(AnchoredText('RMSE: {}'.format(rmse), loc=2))
-    plt.legend()
-    plt.xlabel('img')
     plt.ylabel('sharpness')
     plt.ylim([-0.05, 1])
 
@@ -34,18 +34,26 @@ def plot_sharpness(reference, port, output_file):
 
 
 def load_data(matlab_results, python_results):
-    reference_sharpness = pd.read_csv(matlab_results, index_col=0)
-    port_sharpness = pd.read_csv(python_results, index_col=0)
+    reference = pd.read_csv(matlab_results, index_col=0)
+    port = pd.read_csv(python_results, index_col=0)
 
     # sort the files by their number instead of lexicographically
-    reference_sharpness = reference_sharpness.loc[
-        sorted(reference_sharpness.index, key=lambda name: int(name[3:]))
-    ]
-    port_sharpness = port_sharpness.loc[
-        sorted(port_sharpness.index, key=lambda name: int(name[3:]))
-    ]
+    reference = reference.loc[sorted(
+        reference.index,
+        key=lambda name: int(name[3:])
+    )]
+    port = port.loc[sorted(
+        port.index,
+        key=lambda name: int(name[3:])
+    )]
 
-    return reference_sharpness, port_sharpness
+    return pd.concat(
+        [
+            reference.sharpness.rename('CPBDM_Release_v1.0'),
+            port.sharpness.rename('python-cpbd')
+        ],
+        axis=1
+    )
 
 
 if __name__ == '__main__':
@@ -71,4 +79,4 @@ if __name__ == '__main__':
 
     data = load_data(args.matlab_results, args.python_results)
 
-    plot_sharpness(*data, args.output_file)
+    plot_sharpness(data, args.output_file)
