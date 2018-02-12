@@ -26,7 +26,13 @@ def plot_sharpness(sharpness, output_file):
     sharpness.plot()
 
     plt.title('Performance on LIVE database')
-    plt.gca().add_artist(AnchoredText('RMSE: {}'.format(rmse), loc=2))
+    error_box = AnchoredText('RMSE: {}'.format(rmse), loc=2)
+    error_box.patch.set(
+        boxstyle=plt.legend().get_frame().get_boxstyle(),
+        facecolor=plt.legend().get_frame().get_facecolor(),
+        edgecolor=plt.legend().get_frame().get_edgecolor(),
+    )
+    plt.gca().add_artist(error_box)
     plt.ylabel('sharpness')
     plt.ylim([-0.05, 1])
 
@@ -71,7 +77,7 @@ if __name__ == '__main__':
     parser.add_argument(
        '-o',
        '--output-file',
-       default='performance.png',
+       default='performance.svg',
        help='the name of the file the image should be written to'
     )
 
