@@ -34,5 +34,5 @@ Out[4]: 0.75343203230148048
 
 The following graph visualizes the accuracy of this port in comparison with the reference implementation when tested on the [images](http://lina.faculty.asu.edu/Software/CPBDM/LIVE_Images_GBlur.zip) of the [LIVE database](http://live.ece.utexas.edu/research/quality/subjective.htm):
 
-![Performance on LIVE database](https://raw.githubusercontent.com/0x64746b/python-cpbd/master/tests/data/performance_LIVE.png?token=AA8GbrlkHbhXWZ-ZpvEgik0gzccAdIVdks5aitcAwA%3D%3D "Performance on LIVE database")
+![Performance on LIVE database](./tests/data/performance_LIVE.svg "Performance on LIVE database")
 
