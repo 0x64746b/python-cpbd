@@ -1,5 +1,9 @@
 # About
-CPBD is a a perceptual-based no-reference objective image sharpness metric based on the cumulative probability of blur detection [developed at the Image, Video and Usability Laboratory of Arizona State University](https://ivulab.asu.edu/Quality/CPBD).
+CPBD is a perceptual-based no-reference objective image sharpness metric based on the cumulative probability of blur detection [developed at the Image, Video and Usability Laboratory of Arizona State University](https://ivulab.asu.edu/Quality/CPBD).
+
+> [The metric] is based on the study of human blur perception for varying contrast values.
+> The metric utilizes a probabilistic model to estimate the probability of detecting blur at each edge in the image,
+> and then the information is pooled by computing the cumulative probability of blur detection (CPBD).
 
 This software is a Python port of the [reference MATLAB implementation](lina.faculty.asu.edu/Software/CPBDM/CPBDM_Release_v1.0.zip).
 To approximate the behaviour of MATLAB's proprietary implementation of the Sobel operator, it uses an implementation [inspired by GNU Octave](https://sourceforge.net/p/octave/image/ci/default/tree/inst/edge.m#l196).
