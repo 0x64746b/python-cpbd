@@ -16,6 +16,10 @@ CPBD is described in detail in the following papers:
  - [N. D. Narvekar and L. J. Karam, "An Improved No-Reference Sharpness Metric Based on the Probability of Blur Detection," International Workshop on Video Processing and Quality Metrics for Consumer Electronics (VPQM), January 2010, http://www.vpqm.org (pdf)](http://events.engineering.asu.edu/vpqm/vpqm10/Proceedings_VPQM2010/vpqm_p27.pdf)
  - [N. D. Narvekar and L. J. Karam, "A no-reference perceptual image sharpness metric based on a cumulative probability of blur detection," 2009 International Workshop on Quality of Multimedia Experience, San Diego, CA, 2009, pp. 87-91.](http://ieeexplore.ieee.org/abstract/document/5246972/)
 
+# Credits
+
+If you publish research results using this code, I kindly ask you to reference the papers of the original authors of the metric as stated in the previous section as well as their reference implementation in your bibliography. Thank you!
+
 # Installation
 ```
 $ pip install -r requirements.txt
