@@ -18,7 +18,7 @@ CPBD is described in detail in the following papers:
 
 # Credits
 
-If you publish research results using this code, I kindly ask you to reference the papers of the original authors of the metric as stated in the previous section as well as their reference implementation in your bibliography. Thank you!
+If you publish research results using this code, I kindly ask you to reference the papers of the original authors of the metric as stated in the previous section as well as their reference implementation in your bibliography. See also the copyright statement of the reference implementation in the [license file](LICENSE.txt). Thank you!
 
 # Installation
 ```
