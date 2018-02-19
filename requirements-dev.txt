@@ -1,5 +1,0 @@
--r requirements.txt
-
-pandas==0.19.2
-pytest==3.0.0
-scikit-learn==0.18.1
