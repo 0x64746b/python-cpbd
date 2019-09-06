@@ -11,7 +11,6 @@ from math import atan2, pi
 from sys import argv
 
 import numpy as np
-from scipy.ndimage import imread
 from skimage.feature import canny
 
 from cpbd.octave import sobel
@@ -25,9 +24,6 @@ BETA = 3.6
 
 # block size
 BLOCK_HEIGHT, BLOCK_WIDTH = (64, 64)
-
-# just noticeable widths based on the perceptual experiments
-WIDTH_JNB = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 
 
 def compute(image):
@@ -146,6 +142,10 @@ def marziliano_method(edges, image):
     return edge_widths
 
 
+def _width_JNB(block_contrast):
+    return 5.0 if block_contrast <= 50 else 3.0
+
+
 def _calculate_sharpness_metric(image, edges, edge_widths):
     # type: (numpy.array, numpy.array, numpy.array) -> numpy.float64
 
@@ -174,7 +174,7 @@ def _calculate_sharpness_metric(image, edges, edge_widths):
                 block_widths = block_widths[block_widths != 0]
 
                 block_contrast = get_block_contrast(image[rows, cols])
-                block_jnb = WIDTH_JNB[block_contrast]
+                block_jnb = _width_JNB(block_contrast)
 
                 # calculate the probability of blur detection at the edges
                 # detected in the block
@@ -206,6 +206,7 @@ def get_block_contrast(block):
 
 
 if __name__ == '__main__':
+    from imageio import imread
     input_image = imread(argv[1], mode='L')
     sharpness = compute(input_image)
     print('CPBD sharpness for %s: %f' % (argv[1], sharpness))
