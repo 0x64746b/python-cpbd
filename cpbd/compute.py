@@ -11,8 +11,9 @@ from math import atan2, pi
 from sys import argv
 
 import numpy as np
-from scipy.ndimage import imread
 from skimage.feature import canny
+from skimage.io import imread
+from skimage.color import rgb2gray
 
 from cpbd.octave import sobel
 
@@ -80,7 +81,7 @@ def marziliano_method(edges, image):
             if gradient_x[row, col] != 0:
                 edge_angles[row, col] = atan2(gradient_y[row, col], gradient_x[row, col]) * (180 / pi)
             elif gradient_x[row, col] == 0 and gradient_y[row, col] == 0:
-                edge_angles[row,col] = 0
+                edge_angles[row, col] = 0
             elif gradient_x[row, col] == 0 and gradient_y[row, col] == pi/2:
                 edge_angles[row, col] = 90
 
@@ -206,6 +207,7 @@ def get_block_contrast(block):
 
 
 if __name__ == '__main__':
-    input_image = imread(argv[1], mode='L')
+    input_image = imread(argv[1])
+    input_image = rgb2gray(input_image)
     sharpness = compute(input_image)
     print('CPBD sharpness for %s: %f' % (argv[1], sharpness))
