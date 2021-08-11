@@ -40,14 +40,13 @@ def compute(image):
     # edge detection using canny and sobel canny edge detection is done to
     # classify the blocks as edge or non-edge blocks and sobel edge
     # detection is done for the purpose of edge width measurement.
-    canny_edges = canny(image)
     sobel_edges = sobel(image)
 
     # edge width calculation
     marziliano_widths = marziliano_method(sobel_edges, image)
 
     # sharpness metric calculation
-    return _calculate_sharpness_metric(image, canny_edges, marziliano_widths)
+    return _calculate_sharpness_metric(image, sobel_edges, marziliano_widths)
 
 
 def marziliano_method(edges, image):
@@ -84,9 +83,7 @@ def marziliano_method(edges, image):
             elif gradient_x[row, col] == 0 and gradient_y[row, col] == pi/2:
                 edge_angles[row, col] = 90
 
-
     if np.any(edge_angles):
-
         # quantize the angle
         quantized_angles = 45 * np.round(edge_angles / 45)
 
