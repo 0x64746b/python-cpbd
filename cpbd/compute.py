@@ -12,8 +12,7 @@ from sys import argv
 
 import numpy as np
 from skimage.feature import canny
-from skimage.io import imread
-from skimage.color import rgb2gray
+from imageio import imread
 
 from cpbd.octave import sobel
 
@@ -207,7 +206,6 @@ def get_block_contrast(block):
 
 
 if __name__ == '__main__':
-    input_image = imread(argv[1])
-    input_image = rgb2gray(input_image)
+    input_image = imread(argv[1], pilmode='L')
     sharpness = compute(input_image)
     print('CPBD sharpness for %s: %f' % (argv[1], sharpness))
