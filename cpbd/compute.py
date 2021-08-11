@@ -73,12 +73,13 @@ def marziliano_method(edges, image):
     # calculate the angle of the edges
     for row in range(img_height):
         for col in range(img_width):
-            if gradient_x[row, col] != 0:
-                edge_angles[row, col] = atan2(gradient_y[row, col], gradient_x[row, col]) * (180 / pi)
-            elif gradient_x[row, col] == 0 and gradient_y[row, col] == 0:
-                edge_angles[row, col] = 0
-            elif gradient_x[row, col] == 0 and gradient_y[row, col] == pi/2:
-                edge_angles[row, col] = 90
+            if edges[row][col] == 1:
+                if gradient_x[row, col] != 0:
+                    edge_angles[row, col] = atan2(gradient_y[row, col], gradient_x[row, col]) * (180 / pi)
+                elif gradient_x[row, col] == 0 and gradient_y[row, col] == 0:
+                    edge_angles[row, col] = 0
+                elif gradient_x[row, col] == 0 and gradient_y[row, col] == pi/2:
+                    edge_angles[row, col] = 90
 
     if np.any(edge_angles):
         # quantize the angle
