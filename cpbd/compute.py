@@ -171,7 +171,7 @@ def _calculate_sharpness_metric(image, edges):
                 block_widths = block_widths[block_widths != 0]
 
                 block_contrast = get_block_contrast(image[rows, cols])
-                block_jnb = WIDTH_JNB[block_contrast]
+                block_jnb = get_width_JNB(block_contrast)
 
                 # calculate the probability of blur detection at the edges
                 # detected in the block
@@ -200,6 +200,10 @@ def is_edge_block(block, threshold):
 def get_block_contrast(block):
     # type: (numpy.ndarray) -> int
     return int(np.max(block) - np.min(block))
+
+
+def get_width_JNB(block_contrast):
+    return 5.0 if block_contrast <= 50 else 3.0
 
 
 if __name__ == '__main__':
