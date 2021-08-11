@@ -42,11 +42,8 @@ def compute(image):
     # detection is done for the purpose of edge width measurement.
     sobel_edges = sobel(image)
 
-    # edge width calculation
-    marziliano_widths = marziliano_method(sobel_edges, image)
-
     # sharpness metric calculation
-    return _calculate_sharpness_metric(image, sobel_edges, marziliano_widths)
+    return _calculate_sharpness_metric(image, sobel_edges)
 
 
 def marziliano_method(edges, image):
@@ -143,7 +140,7 @@ def marziliano_method(edges, image):
     return edge_widths
 
 
-def _calculate_sharpness_metric(image, edges, edge_widths):
+def _calculate_sharpness_metric(image, edges):
     # type: (numpy.array, numpy.array, numpy.array) -> numpy.float64
 
     # get the size of image
@@ -165,8 +162,10 @@ def _calculate_sharpness_metric(image, edges, edge_widths):
             cols = slice(BLOCK_WIDTH * j, BLOCK_WIDTH * (j + 1))
 
             if is_edge_block(edges[rows, cols], THRESHOLD):
-                block_widths = edge_widths[rows, cols]
+                block_widths = marziliano_method(edges[rows, cols], image[rows, cols])
                 # rotate block to simulate column-major boolean indexing
+
+                # edgeWidths postprocessing
                 block_widths = np.rot90(np.flipud(block_widths), 3)
                 block_widths = block_widths[block_widths != 0]
 
