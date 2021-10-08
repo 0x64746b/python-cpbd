@@ -11,7 +11,7 @@ from math import atan2, pi
 from sys import argv
 
 import numpy as np
-from scipy.ndimage import imread
+from imageio import imread 
 from skimage.feature import canny
 
 from cpbd.octave import sobel
@@ -206,6 +206,6 @@ def get_block_contrast(block):
 
 
 if __name__ == '__main__':
-    input_image = imread(argv[1], mode='L')
+    input_image = imread(argv[1], pilmode = 'L')
     sharpness = compute(input_image)
     print('CPBD sharpness for %s: %f' % (argv[1], sharpness))
