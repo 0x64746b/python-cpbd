@@ -11,9 +11,10 @@ from math import atan2, pi
 from sys import argv
 
 import numpy as np
-from scipy.ndimage import imread
-from skimage.feature import canny
 
+from matplotlib.pyplot import imread
+
+from skimage.feature import canny
 from cpbd.octave import sobel
 
 
@@ -33,7 +34,6 @@ WIDTH_JNB = np.concatenate([5*np.ones(51), 3*np.ones(205)])
 def compute(image):
     # type: (numpy.ndarray) -> float
     """Compute the sharpness metric for the given data."""
-
     # convert the image to double for further processing
     image = image.astype(np.float64)
 
